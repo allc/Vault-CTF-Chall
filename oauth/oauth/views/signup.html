@@ -1,0 +1,15 @@
+<form method="post">
+  <label for="username">Username</label><input id="username" name="username" required autofocus >
+  <label for="password">Password</label><input id="password" type="password" name="password" required>
+  <input type="submit" value="Signup">
+  {% if error %}
+    <div>{{ error }}</div>
+  {% endif %}
+  <div>Or
+    {% if redirect %}
+      <a href="/login?redirect={{redirect}}">login</a>
+    {% else %}
+      <a href="/login">login</a>
+    {% endif %}
+  </div>
+</form>

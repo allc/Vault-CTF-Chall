@@ -1,0 +1,14 @@
+<div>
+  {% if username %}
+    You are logged in as {{ username }}.
+  {% else %}
+    <a href="{{ oauthUrl }}">Login</a>
+  {% endif %}
+</div>
+<h1>This is Chillvibes' Vault</h1>
+
+{% if username === owner %}
+  <div>{{ flag }}</div>
+{% else %}
+  <div>Only the owner {{ owner }} can view the secret message.</div>
+{% endif %}

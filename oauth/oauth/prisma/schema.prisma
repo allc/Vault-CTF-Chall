@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./db.sqlite"
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  username String @unique
+  password String
+  authorizationCodes AuthorizationCode[]
+  tokens Token[]
+}
+
+model App {
+  id Int @id @default(autoincrement())
+  clientId String @unique
+  clientSecret String
+  name String
+  redirects Redirect[]
+  authorizationCodes AuthorizationCode[]
+}
+
+model Redirect {
+  id Int @id @default(autoincrement())
+  uri String
+  app App @relation(fields: [appId], references: [id])
+  appId Int
+
+  @@unique([appId, uri])
+}
+
+model AuthorizationCode {
+  id Int @id @default(autoincrement())
+  code String
+  expire DateTime
+  app App @relation(fields: [appId], references: [id])
+  appId Int
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@unique([code, appId])
+}
+
+model Token {
+  id Int @id @default(autoincrement())
+  token String @unique
+  expire DateTime
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+}
