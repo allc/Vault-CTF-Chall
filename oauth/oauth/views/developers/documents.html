@@ -1,0 +1,51 @@
+<ul>
+  <li>
+    <div>
+      <div>OAuth2 Endpoints</div>
+      <div><code>/oauth2</code></div>
+      <ul>
+        <li>
+          <div>
+            <code>/authorize</code>
+          </div>
+          <div>Method: <code>GET</code></div>
+          <ul>
+            <li><code>client_id</code>: <strong>required</strong></li>
+            <li><code>redirect_uri</code>: <strong>required</strong></li>
+            <li><code>response_type</code>: <strong>required</strong></li>
+            <li><code>scope</code>: <strong>required</strong></li>
+            <li><code>state</code>: <strong>optional</strong></li>
+          </ul>
+        </li>
+        <li>
+          <div>
+            <code>/token</code>
+          </div>
+          <div>Method: <code>POST</code></div>
+          <div>Content-Type: <code>application/x-www-form-urlencoded</code></div>
+          <ul>
+            <li><code>client_id</code>: <strong>required</strong></li>
+            <li><code>client_secret</code>: <strong>required</strong></li>
+            <li><code>grant_type</code>: <strong>required</strong> <code>authorization_code</code></li>
+            <li><code>code</code>: <strong>required</strong></li>
+            <li><code>redirect_uri</code>: <strong>required</strong></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div>API Endpoints</div>
+      <div><code>/api</code></div>
+    </div>
+    <ul>
+      <li>
+        <div>
+          <code>/@me</code>
+        </div>
+        <div>Method: <code>GET</code></div>
+      </li>
+    </ul>
+  </li>
+</ul>

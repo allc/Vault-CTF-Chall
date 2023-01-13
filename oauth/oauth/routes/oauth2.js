@@ -95,6 +95,11 @@ router.post('/authorize', doubleCsrfProtection, isAuthenticated, async (req, res
                   username: req.session.username
                 }
               },
+              app: {
+                connect: {
+                  clientId: client_id,
+                }
+              }
             }
           });
           redirect = redirect_uri + `#token_type=Bearer&access_token=${token.token}&expires_in=${tokenExpiresIn / 1000}`;
@@ -124,6 +129,61 @@ router.post('/authorize', doubleCsrfProtection, isAuthenticated, async (req, res
       res.send('Invalid decision.');
       return;
   }
+});
+
+router.post('/oauth2/token', async (req, res) => {
+  const { client_id, client_secret, grant_type, code, redirect_uri } = req.body;
+  let token;
+  const tokenExpiresIn = 3600000;
+  await prisma.$transaction(async (tx) => {
+    const authorizationCode = await tx.AuthorizationCode.findFirstOrThrow({
+      where: {
+        code: code,
+        app: {
+          clientId: client_id,
+          clientSecret: client_secret,
+        },
+        //TODO: verify redirect_uri
+      },
+      include: {
+        user: true,
+      }
+    });
+    await tx.AuthorizationCode.deleteMany({
+      where: {
+        code: code,
+        app: {
+          clientId: client_id,
+          clientSecret: client_secret,
+        },
+      }
+    });
+    if (authorizationCode.expire <= new Date(Date.now())) {
+      throw new Error('Code expired.');
+    }
+    token = await tx.token.create({
+      data: {
+        token: randomBytes(64).toString('hex'),
+        expire: new Date(Date.now() + tokenExpiresIn),
+        user: {
+          connect: {
+            id: authorizationCode.user.id,
+          }
+        },
+        app: {
+          connect: {
+            clientId: client_id,
+          }
+        }
+      }
+    });
+  });
+  res.json({
+    access_token: token.token,
+    token_type: 'Bearer',
+    expires_in: tokenExpiresIn / 1000,
+    scope: 'username',
+  });
 });
 
 export default router;

@@ -15,9 +15,9 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/oauth2/callback', (req, res) => {
-  const {API_ENDPOINT, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
+  const {OAUTH_API_ENDPOINT, API_ENDPOINT, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
   if (req.query.code) {
-    fetch(API_ENDPOINT + '/oauth2/token',{
+    fetch(OAUTH_API_ENDPOINT + '/token',{
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'

@@ -5,7 +5,6 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import nunjucks from 'nunjucks';
 import session from 'express-session';
-import { randomBytes } from 'crypto';
 import flash from 'connect-flash';
 
 import router from './routes/index.js';
@@ -14,6 +13,9 @@ import apiRouter from './routes/api.js';
 
 import { dirname } from 'path';
 const __dirname = dirname(import.meta.url);
+
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 var app = express();
 
@@ -26,7 +28,7 @@ app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-  secret: randomBytes(64).toString('hex'),
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
 }));

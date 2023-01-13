@@ -1,0 +1,17 @@
+<div>Logged in as {{ username }}</div>
+<h1>Manage Apps</h1>
+<div>
+  <h2>Authorized Apps</h2>
+  {% if authorizedApps %}
+  <ul>
+    {% for app in authorizedApps %}
+    <li>{{ app.name }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  You have no authorized apps.
+  {% endif %}
+</div>
+<div>
+  <a href="/developers/app">My app</a>
+</div>

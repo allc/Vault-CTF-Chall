@@ -4,9 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
-var crypto = require('crypto');
 const nunjucks = require('nunjucks');
 
+let dotenv = require('dotenv');
+dotenv.config();
 
 var indexRouter = require('./routes/index');
 
@@ -21,7 +22,7 @@ app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(session({
   name: 'vault-session',
-  secret: crypto.randomBytes(64).toString('hex'),
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
 }));

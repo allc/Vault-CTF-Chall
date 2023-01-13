@@ -18,7 +18,8 @@
     "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
-    "nunjucks": "^3.2.3"
+    "nunjucks": "^3.2.3",
+    "puppeteer": "^19.5.2"
   },
   "devDependencies": {
     "prisma": "^4.8.1"

@@ -1,0 +1,12 @@
+<div>Logged in as {{ username }}</div>
+<h1>Create App</h1>
+<div>
+  <p>You have not created any apps.</p>
+  <p>It is easy to create app and I ({{ targetUsername }}) am interested in seeing them.</p>
+  <form method="post">
+    <input type="hidden" name="csrftoken" value="{{ csrftoken }}">
+    <label for="id">App name</label><input id="name" name="name">
+    <label for="redirect">Redirect URI</label><input id="redirect" type="url" name="redirect">
+    <input type="submit" value="Create App">
+  </form>
+</div>

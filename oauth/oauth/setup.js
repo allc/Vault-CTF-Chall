@@ -9,7 +9,7 @@ try{
   await prisma.user.create({
     data: {
       username: process.env.TARGET_USERNAME,
-      password: randomBytes(64).toString('hex'),
+      password: process.env.PASSWORD,
     }
   });
 } catch {
@@ -22,6 +22,11 @@ try {
       clientId: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
       name: process.env.APP_NAME,
+      user: {
+        connect: {
+          username: process.env.TARGET_USERNAME
+        }
+      }
     }
   });
 } catch {
