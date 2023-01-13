@@ -3,7 +3,7 @@ var router = express.Router();
 require('dotenv').config();
 
 router.get('/', function(req, res, next) {
-  const {OAUTH_API_ENDPOINT, CLIENT_ID, REDIRECT_URI } = process.env;
+  const { OAUTH_API_ENDPOINT, CLIENT_ID, REDIRECT_URI } = process.env;
   const redirectUrI = encodeURIComponent(REDIRECT_URI);
   const oauthUrl = `${OAUTH_API_ENDPOINT}/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${redirectUrI}&scope=username`
   res.render('index.html', {
@@ -15,9 +15,9 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/oauth2/callback', (req, res) => {
-  const {OAUTH_API_ENDPOINT, API_ENDPOINT, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
+  const { OAUTH_API_ENDPOINT_INTRNAL, API_ENDPOINT, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
   if (req.query.code) {
-    fetch(OAUTH_API_ENDPOINT + '/token',{
+    fetch(OAUTH_API_ENDPOINT_INTRNAL + '/token',{
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -30,7 +30,7 @@ router.get('/oauth2/callback', (req, res) => {
         redirect_uri: REDIRECT_URI,
       }).toString(),
     }).then((r) => r.json()).then((j) => {
-      fetch(API_ENDPOINT + '/users/@me', {
+      fetch(OAUTH_API_ENDPOINT_INTRNAL + '/users/@me', {
         headers: {
           'Authorization': 'Bearer ' + j['access_token'],
         }
@@ -42,7 +42,7 @@ router.get('/oauth2/callback', (req, res) => {
     });
     return;
   } else if (req.query.access_token) {
-    fetch(API_ENDPOINT + '/users/@me', {
+    fetch(OAUTH_API_ENDPOINT_INTRNAL + '/users/@me', {
       headers: {
         'Authorization': 'Bearer ' + req.query.access_token,
       }

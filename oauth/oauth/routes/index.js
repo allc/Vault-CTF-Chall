@@ -155,9 +155,9 @@ router.get('/developers/documents', (res, req) =>{
 });
 
 router.get('/login', function (req, res) {
-  const redirect = req.query.redirect;
+  const redirectEncoded = encodeURIComponent(req.query.redirect);
   const error = req.flash('error');
-  res.render('login.html', { redirect: redirect, error: error });
+  res.render('login.html', { redirect: redirectEncoded, error: error });
 });
 router.post('/login', async function (req, res) {
   const user = await prisma.user.findFirst({
@@ -173,15 +173,15 @@ router.post('/login', async function (req, res) {
     req.flash('error', 'Invalid username or password.')
     let loginRedirect = '/login';
     if (req.query.redirect) {
-      loginRedirect += '?redirect=' + req.query.redirect;
+      loginRedirect += '?redirect=' + encodeURIComponent(req.query.redirect);
     }
     res.redirect(loginRedirect);
   }
 });
 
 router.get('/signup', function (req, res) {
-  const redirect = req.query.redirect;
-  res.render('signup.html', { redirect: redirect });
+  const redirectEncoded = encodeURIComponent(req.query.redirect);
+  res.render('signup.html', { redirect: redirectEncoded });
 });
 router.post('/signup', async function (req, res) {
   try {
@@ -197,7 +197,7 @@ router.post('/signup', async function (req, res) {
     req.flash('error', 'User already exists.')
     let loginRedirect = '/signup';
     if (req.query.redirect) {
-      loginRedirect += '?redirect=' + req.query.redirect;
+      loginRedirect += '?redirect=' + encodeURIComponent(req.query.redirect);
     }
     res.redirect(loginRedirect);
   }

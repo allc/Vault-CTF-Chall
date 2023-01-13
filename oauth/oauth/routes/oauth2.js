@@ -131,7 +131,7 @@ router.post('/authorize', doubleCsrfProtection, isAuthenticated, async (req, res
   }
 });
 
-router.post('/oauth2/token', async (req, res) => {
+router.post('/token', async (req, res) => {
   const { client_id, client_secret, grant_type, code, redirect_uri } = req.body;
   let token;
   const tokenExpiresIn = 3600000;
