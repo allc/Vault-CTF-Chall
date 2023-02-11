@@ -30,7 +30,7 @@ router.get('/oauth2/callback', (req, res) => {
         redirect_uri: REDIRECT_URI,
       }).toString(),
     }).then((r) => r.json()).then((j) => {
-      fetch(OAUTH_API_ENDPOINT_INTRNAL + '/users/@me', {
+      fetch(API_ENDPOINT + '/users/@me', {
         headers: {
           'Authorization': 'Bearer ' + j['access_token'],
         }
@@ -42,7 +42,7 @@ router.get('/oauth2/callback', (req, res) => {
     });
     return;
   } else if (req.query.access_token) {
-    fetch(OAUTH_API_ENDPOINT_INTRNAL + '/users/@me', {
+    fetch(API_ENDPOINT + '/users/@me', {
       headers: {
         'Authorization': 'Bearer ' + req.query.access_token,
       }

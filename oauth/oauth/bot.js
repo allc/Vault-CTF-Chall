@@ -5,7 +5,9 @@ dotenv.config();
 const { OAUTH_API_ENDPOINT, TARGET_USERNAME, PASSWORD } = process.env;
 
 export async function visitApp(clientId, redirectUri) {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox'],
+  });
   const page = await browser.newPage();
 
   redirectUri = encodeURIComponent(redirectUri);
@@ -20,6 +22,7 @@ export async function visitApp(clientId, redirectUri) {
   const authorizeButtonSelector = '#authorizeButton';
   await page.waitForNavigation();
   await page.click(authorizeButtonSelector);
+  await page.waitForNavigation();
 
   await browser.close();
 }
