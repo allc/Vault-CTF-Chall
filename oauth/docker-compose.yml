@@ -3,10 +3,6 @@
 version: '3'
 services:
   oauth:
-    environment:
-      - "CSRF_SECRET=ac993c72267193b918e9cc7b9b1722c477e71c0e501d8b11ac76af3ecd60de1326e0458743ff1c37cafff5afc95007ba7eb33d2f62144aba2875f74ee8bd87bd"
-      - "SESSION_SECRET=6429c4e716e1bc7a94f33f7ff009a94dc4e203b3af0c69d5efb27a25cad7ffad53cc90464f5001f1251eb9dd94ec56ccc94ccd7df663a52c15898711fdc22aa6"
-      - "OAUTH_API_ENDPOINT=http://localhost:3001/oauth2"
     build: './oauth'
     ports:
       - "3001:3001"
@@ -20,7 +16,7 @@ services:
       - "CLIENT_SECRET=da3d2979d0cd84e8fc8beb47e94492cc75fb5fadd1fec2f526996bef24c25b45"
       - "REDIRECT_URI=http://localhost:3000/oauth2/callback"
       - "TARGET_USERNAME=Chillvibes"
-      - "FLAG=flag{fl4g}"
+      - "FLAG=pwnEd{fl4g}"
       - "SESSION_SECRET=49b1f5fac85402bc14e806a3295d9c48e919bb063033bdb6ef58892b212c229469def18448c6f0591f03766754aa72533bb9aaf3d0288dc4fcd7ecef3b19e19b"
 
     build: './client'
