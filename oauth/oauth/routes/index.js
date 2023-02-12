@@ -2,6 +2,7 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import isAuthenticated from '../middlewares/isAuthenticated.js';
 import crypto from 'crypto';
+import { passwordStrength } from 'check-password-strength'
 
 var router = express.Router();
 
@@ -24,7 +25,7 @@ router.get('/', function (req, res, next) {
   });
 });
 
-router.get('/apps', isAuthenticated, async (req, res, next) => {
+router.get('/apps', isAuthenticated, async (req, res) => {
   const authorizedApps = await prisma.app.findMany({
     where: {
       tokens: {
@@ -36,7 +37,6 @@ router.get('/apps', isAuthenticated, async (req, res, next) => {
       }
     }
   });
-  console.log(authorizedApps);
   res.render('apps.html', {
     username: req.session.username,
     authorizedApps: authorizedApps,
@@ -150,14 +150,18 @@ router.post('/developers/app/publish', doubleCsrfProtection, isAuthenticated, as
   }
 });
 
-router.get('/developers/documents', (res, req) =>{
-  res.render('/developers/documents.html');
+router.get('/docs', (req, res) =>{
+  res.render('docs.html', { username: req.session.username });
 });
 
 router.get('/login', function (req, res) {
-  const redirectEncoded = encodeURIComponent(req.query.redirect);
+  if (req.session.username) {
+    res.redirect(req.query.redirect || '/');
+    return;
+  }
+  const redirectEncoded = encodeURIComponent(req.query.redirect || '');
   const error = req.flash('error');
-  res.render('login.html', { redirect: redirectEncoded, error: error });
+  res.render('login.html', { redirect: redirectEncoded, username: req.session.username, error: error });
 });
 router.post('/login', async function (req, res) {
   const user = await prisma.user.findFirst({
@@ -180,27 +184,62 @@ router.post('/login', async function (req, res) {
 });
 
 router.get('/signup', function (req, res) {
-  const redirectEncoded = encodeURIComponent(req.query.redirect);
-  res.render('signup.html', { redirect: redirectEncoded });
+  if (req.session.username) {
+    res.redirect(req.query.redirect || '/');
+    return;
+  }
+  const redirectEncoded = encodeURIComponent(req.query.redirect || '');
+  const error = req.flash('error');
+  res.render('signup.html', { redirect: redirectEncoded, username: req.session.username, error: error });
 });
 router.post('/signup', async function (req, res) {
-  try {
-    const user = await prisma.user.create({
-      data: {
-        username: req.body.username,
-        password: req.body.password,
-      }
-    });
-    req.session.username = user.username;
-    res.redirect(req.query.redirect || '/');
-  } catch {
-    req.flash('error', 'User already exists.')
-    let loginRedirect = '/signup';
-    if (req.query.redirect) {
-      loginRedirect += '?redirect=' + encodeURIComponent(req.query.redirect);
+  let error = null;
+
+  // check if user exists
+  let user = await prisma.user.findFirst({
+    where: {
+      username: req.body.username
     }
-    res.redirect(loginRedirect);
+  });
+  if (user) {
+    error = 'User already exists.';
   }
+
+  if (!error) {
+    // check password strength
+    const strength = passwordStrength(req.body.password).id;
+    if (strength < 2) {
+      error = 'Password too weak.';
+    }
+  }
+
+  if (!error) {
+    try {
+      const user = await prisma.user.create({
+        data: {
+          username: req.body.username,
+          password: req.body.password,
+        }
+      });
+      req.session.username = user.username;
+      res.redirect(req.query.redirect || '/');
+      return;
+    } catch {
+      error = 'User already exists.';
+    }
+  }
+
+  req.flash('error', error)
+  let loginRedirect = '/signup';
+  if (req.query.redirect) {
+    loginRedirect += '?redirect=' + encodeURIComponent(req.query.redirect);
+  }
+  res.redirect(loginRedirect);
 });
+
+router.get('/logout', function(req, res) {
+  req.session.username = null;
+  res.redirect('/');
+})
 
 export default router;

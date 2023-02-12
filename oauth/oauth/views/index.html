@@ -1,10 +1,5 @@
 {% extends 'base.html' %}
 
-<div>
-  {% if username %}
-  <div>Logged in as {{ username }}</div>
-  <div><a href="/apps">Manage apps</a></div>
-  {% else %}
-  <a href="/login">Login</a>
-  {% endif %}
-</div>
+{% block content %}
+<div>Welcome to SIGKILL's OAuth service.</div>
+{% endblock %}

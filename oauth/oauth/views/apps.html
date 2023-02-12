@@ -1,17 +1,22 @@
-<div>Logged in as {{ username }}</div>
+{% extends 'base.html' %}
+
+{% block title %}Manage Apps - {% endblock %}
+
+{% block content %}
 <h1>Manage Apps</h1>
 <div>
   <h2>Authorized Apps</h2>
-  {% if authorizedApps %}
+  {% if authorizedApps.length > 0 %}
   <ul>
     {% for app in authorizedApps %}
     <li>{{ app.name }}</li>
     {% endfor %}
   </ul>
   {% else %}
-  You have no authorized apps.
+  <div>You have no authorized apps.</div>
   {% endif %}
+  <h2>
+    My Apps
+  </h2>
 </div>
-<div>
-  <a href="/developers/app">My app</a>
-</div>
+{% endblock %}

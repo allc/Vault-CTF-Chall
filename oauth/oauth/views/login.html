@@ -1,10 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Login - 
+{% endblock %}
+
+{% block content %}
+<h1>
+  Login
+</h1>
 <form method="post">
-  <label for="username">Username</label><input id="username" name="username" required autofocus >
-  <label for="password">Password</label><input id="password" type="password" name="password" required>
-  <input id="login" type="submit" value="Login">
-  {% if error %}
-    <div>{{ error }}</div>
+  {% if error.length > 0 %}
+  <div class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
   {% endif %}
+  <div class="mb-3 col-3">
+    <label for="username" class="form-label">Username</label><input id="username" name="username" class="form-control" required autofocus >
+  </div>
+  <div class="mb-3 col-3">
+    <label for="password" class="form-label">Password</label><input id="password" type="password" name="password" class="form-control" required>
+  </div>
+  <input id="login" type="submit" value="Login" class="btn btn-primary">
   <div>No account?
     {% if redirect %}
       <a href="/signup?redirect={{redirect}}">Sign up</a>
@@ -13,3 +29,4 @@
     {% endif %}
   </div>
 </form>
+{% endblock %}
