@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}App - {% endblock %}
+
+{% block content %}
+<h1>Your App {{ app.name }}</h1>
+<div>
+  <h2>Config App</h2>
+  <div>
+    <ul>
+      <li>Client ID: {{ app.clientId }}</li>
+    </ul>
+    <div>Editing the app is not currently supported.</div>
+  </div>
+  <h2>Generate OAuth2 URL</h2>
+  <form>
+    <fieldset class="row mb-3">
+      <legend class="col-form-label col-2">Scopes</legend>
+      <div class="col-10">
+        <div class="form-check">
+          <input id="scopeIdentity" type="checkbox" class="form-check-input"><label for="scopeIdentity"
+            class="form-check-label">Identity</label>
+        </div>
+      </div>
+    </fieldset>
+    <div class="row mb-3">
+      <label for="redirect" class="col-2 col-form-label">Redirect URL</label>
+      <div class="col-10">
+        <select id="redirect" class="form-select">
+          {% for redirect in app.redirects %}
+          <option value="{{ redirect.uri }}">{{ redirect.uri }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <label for="responseType" class="col-2 col-form-label">Response type</label>
+      <div class="col-10">
+        <select id="responseType" class="form-select">
+          <option value="code">code</option>
+          <option value="token">token</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <button onclick="handleGenerate(event)" class="btn btn-primary">Generate</button>
+    </div>
+    <div class="row mb-3">
+      <label for="generated" class="col-2 col-form-label">
+        Generated URL
+      </label>
+      <div class="col-10">
+        <input id="generated" class="form-control" value="" disabled>
+      </div>
+    </div>
+  </form>
+</div>
+<h2>Publish App</h2>
+<div>
+  {% if app.published %}
+  Your app is published, you can
+  <form action="/apps/{{ app.clientId }}/publish" method="post">
+    <input type="hidden" name="csrftoken" value="{{ csrftoken }}">
+    <input type="submit" name="action" value="Unpublish" class="btn btn-primary">
+  </form>
+  {% else %}
+  When your app is ready, you can
+  <form action="/apps/{{ app.clientId }}/publish" method="post">
+    <input type="hidden" name="csrftoken" value="{{ csrftoken }}">
+    <input type="submit" name="action" value="Publish" class="btn btn-primary">
+  </form>
+  A member of SIGKILL will review them.
+  {% endif %}
+</div>
+<script>
+  function handleGenerate(e) {
+    e.preventDefault();
+    let result;
+    let scopes = [];
+    if (document.querySelector('#scopeIdentity').checked) {
+      scopes.push('identity');
+    }
+    if (scopes.length <= 0) {
+      result = 'Please select at least one OAuth2 scope';
+    } else {
+      const redirectUri = document.querySelector('#redirect').value;
+      const responseType = document.querySelector('#responseType').value;
+      result = generateUrl(redirectUri, scopes, responseType);
+    }
+    document.querySelector('#generated').value = result;
+  }
+  function generateUrl(redirectUri, scopes, responseType) {
+    const scopeEncode = encodeURIComponent(scopes.join(' '));
+    redirectUri = encodeURIComponent(redirectUri);
+    return `{{ oauthApiEndpoint }}/authorize?client_id={{ app.clientId }}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scopeEncode}`;
+  }
+</script>
+{% endblock %}

@@ -13,10 +13,22 @@
     {% endfor %}
   </ul>
   {% else %}
-  <div>You have no authorized apps.</div>
+  <div>You have not authorized any apps.</div>
   {% endif %}
   <h2>
     My Apps
   </h2>
+  <div>
+    {% if myApps.length > 0 %}
+    <ul>
+      {% for app in myApps %}
+      <li><a href="/apps/{{ app.clientId }}">{{ app.name }}</a></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div>You have not created any apps.</div>
+    {% endif %}
+    <div><a href="/apps/create" class="btn btn-outline-primary">Create App</a></div>
+  </div>
 </div>
 {% endblock %}

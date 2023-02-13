@@ -37,33 +37,70 @@ router.get('/apps', isAuthenticated, async (req, res) => {
       }
     }
   });
-  res.render('apps.html', {
-    username: req.session.username,
-    authorizedApps: authorizedApps,
-  });
-});
-
-router.get('/developers/app', isAuthenticated, async (req, res) => {
-  const app = await prisma.app.findFirst({
+  const myApps = await prisma.app.findMany({
     where: {
       user: {
         username: req.session.username,
+      }
+    }
+  });
+  res.render('apps.html', {
+    username: req.session.username,
+    authorizedApps: authorizedApps,
+    myApps: myApps,
+  });
+});
+
+router.get('/apps/create', isAuthenticated, async (req, res) => {
+  const csrftoken = generateToken(res);
+  res.render('create_app.html', {
+    username: req.session.username,
+    csrftoken: csrftoken,
+  });
+});
+
+router.post('/apps/create', doubleCsrfProtection, isAuthenticated, async (req, res) => {
+  let app;
+  app = await prisma.app.create({
+    data: {
+      clientId: crypto.randomUUID(),
+      clientSecret: crypto.randomBytes(64).toString('hex'), //TODO: securely store client secret
+      name: req.body.name,
+      redirects: {
+        create: {
+          uri: req.body.redirect,
+        }
       },
+      user: {
+        connect: {
+          username: req.session.username,
+        }
+      }
+    }
+  });
+  res.render('app_created.html', {
+    username: req.session.username,
+    app: app,
+  });
+});
+
+router.get('/apps/:clientId', isAuthenticated, async (req, res) => {
+  const clientId = req.params.clientId;
+  const app = await prisma.app.findUnique({
+    where: {
+      clientId: clientId,
     },
     include: {
       redirects: true,
+      user: true,
     }
   });
-  const csrftoken = generateToken(res);
-  if (!app) {
-    res.render('developers/create_app.html', {
-      username: req.session.username,
-      targetUsername: process.env.TARGET_USERNAME,
-      csrftoken: csrftoken,
-    });
+  if (!app || app.user.username !== req.session.username) {
+    res.status(403).send('Forbidden');
     return;
   }
-  res.render('developers/app.html', {
+  const csrftoken = generateToken(res);
+  res.render('app.html', {
     username: req.session.username,
     app: app,
     oauthApiEndpoint: process.env.OAUTH_API_ENDPOINT,
@@ -72,80 +109,45 @@ router.get('/developers/app', isAuthenticated, async (req, res) => {
   });
 });
 
-router.post('/developers/app', doubleCsrfProtection, isAuthenticated, async (req, res) => {
-  let app;
-  await prisma.$transaction(async (tx) => {
-    app = await prisma.app.findFirst({
-      where: {
-        user: {
-          username: req.session.username,
-        }
-      }
-    });
-    if (app) {
-      throw new Error('Sorry, currently each user can only create one app.');
+router.post('/apps/:clientId/publish', doubleCsrfProtection, isAuthenticated, async (req, res) => {
+  const clientId = req.params.clientId;
+  const app = await prisma.app.findUnique({
+    where: {
+      clientId: clientId,
+    },
+    include: {
+      redirects: true,
+      user: true,
     }
-    app = await prisma.app.create({
-      data: {
-        clientId: crypto.randomUUID(),
-        clientSecret: crypto.randomBytes(64).toString('hex'), //TODO: securely store client secret
-        name: req.body.name,
-        redirects: {
-          create: {
-            uri: req.body.redirect,
-          }
-        },
-        user: {
-          connect: {
-            username: req.session.username,
-          }
-        }
-      }
-    });
-    res.render('developers/app_created.html', {
-      username: req.session.username,
-      app: app,
-    });
   });
-});
+  if (!app || app.user.username !== req.session.username) {
+    res.status(403).send('Forbidden');
+    return;
+  }
 
-router.post('/developers/app/publish', doubleCsrfProtection, isAuthenticated, async (req, res) => {
   if (req.body.action === 'Publish') {
-    //TODO: captcha
-    await prisma.app.updateMany({
+    //TODO: rate limit
+    await prisma.app.update({
       where: {
-        user: {
-          username: req.session.username
-        }
+        id: app.id,
       },
       data: {
         published: true,
       }
     });
   } else if (req.body.action === 'Unpublish') {
-    await prisma.app.updateMany({
+    await prisma.app.update({
       where: {
-        user: {
-          username: req.session.username
-        }
+        id: app.id,
       },
       data: {
         published: false,
       }
     });
   }
-  res.redirect('/developers/app');
+  res.redirect('/apps/' + clientId);
+
   if (req.body.action === 'Publish') {
-    const app = await prisma.app.findFirst({
-      where: {
-        user: {
-          username: req.session.username,
-        }
-      },
-      include: {
-        redirects: true,
-      }
-    })
     visitApp(app.clientId, app.redirects[0].uri);
   }
 });

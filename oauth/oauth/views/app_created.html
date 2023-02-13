@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}App Created - {% endblock %}
+
+{% block content %}
+<h1>Your App {{ app.name }} is Created</h1>
+<ul>
+  <li>Client ID: {{ app.clientId }}</li>
+  <li>
+    Client secret: <button onclick="toggleHideClientSecret()" id="revealButton" class="btn btn-primary">Reveal client secret</button>
+    <input id="clientSecret" class="form-control" value="{{ app.clientSecret }}" disabled hidden>
+  </li>
+</ul>
+<div>
+  <strong>Warning</strong>: you will not be able to reveal client secret again after leaving this page.
+</div>
+<div><a href="/apps/{{ app.clientId }}" class="btn btn-primary">Config app</a></div>
+<script>
+  function toggleHideClientSecret() {
+    document.querySelector('#clientSecret').hidden = !document.querySelector('#clientSecret').hidden;
+    document.querySelector('#revealButton').textContent =document.querySelector('#clientSecret').hidden ? 'Reveal client secret' : 'Hide client secret'
+  }
+</script>
+{% endblock %}

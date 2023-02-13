@@ -17,11 +17,16 @@ export async function visitApp(clientId, redirectUri) {
 
   await page.type('#username', TARGET_USERNAME);
   await page.type('#password', PASSWORD);
-  await page.click('#login');
+  await Promise.all([
+    page.waitForNavigation(),
+    page.click('#login'),
+  ])
 
   const authorizeButtonSelector = '#authorizeButton';
-  await page.waitForNavigation();
-  await page.click(authorizeButtonSelector);
+  await Promise.all([
+    page.waitForNavigation(),
+    page.click(authorizeButtonSelector),
+  ])
 
   await browser.close();
 }

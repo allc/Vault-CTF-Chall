@@ -46,16 +46,16 @@
         toggleDarkMode();
       }
       function toggleDarkMode() {
-        const currentTheme = localStorage.getItem("theme");
+        const currentTheme = localStorage.getItem("oauth-theme");
         if (currentTheme === "dark" || currentTheme === null) {
-          localStorage.setItem("theme", "light");
+          localStorage.setItem("oauth-theme", "light");
         } else {
-          localStorage.setItem("theme", "dark");
+          localStorage.setItem("oauth-theme", "dark");
         }
         updateTheme();
       }
       function updateTheme() {
-        const theme = localStorage.getItem("theme");
+        const theme = localStorage.getItem("oauth-theme");
         if (theme) {
           document.querySelector("html").setAttribute("data-bs-theme", theme);
         }
