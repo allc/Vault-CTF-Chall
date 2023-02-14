@@ -12,10 +12,11 @@
       <label for="id" class="form-label">App name</label><input id="name" name="name" class="form-control" required>
     </div>
     <div class="mb-3 col-3">
-      <label for="redirect" class="form-label">Redirect URI</label><input id="redirect" type="url" name="redirect" class="form-control" required>
+      <label for="redirect" class="form-label">Redirect URI</label>
+      <input id="redirect" type="url" name="redirect" class="form-control" required>
+      <div class="form-text">Only one redirect URL per app is currently supported.</div>
     </div>
     <input type="submit" value="Create App" class="btn btn-primary">
   </form>
-  <div>Editing apps is not currently supported.</div>
 </div>
 {% endblock %}

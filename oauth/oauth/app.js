@@ -28,7 +28,7 @@ app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-  name: 'oauth-sid',
+  name: 'auth-sid',
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,

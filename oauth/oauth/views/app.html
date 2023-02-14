@@ -7,10 +7,33 @@
 <div>
   <h2>Config App</h2>
   <div>
-    <ul>
-      <li>Client ID: {{ app.clientId }}</li>
-    </ul>
-    <div>Editing the app is not currently supported.</div>
+    <form method="post">
+      <input type="hidden" name="csrftoken" value="{{ csrftoken }}">
+      <div class="row mb-3">
+        <label for="clientId" class="col-form-label col-2">Client ID</label>
+        <div class="col-10">
+          <input class="form-control" id="clientId" value="{{ app.clientId }}" disabled>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label for="appName" class="col-form-label col-2">App name</label>
+        <div class="col-10">
+          <input class="form-control" id="appName" value="{{ app.name }}" name="name" required>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label for="redirectUrl" class="col-form-label col-2">Redirect URL</label>
+        <div class="col-10">
+          <input class="form-control" id="redirectUrl" value="{{ app.redirects[0].uri }}" name="redirect" type="url" required>
+          <div class="form-text">Only one redirect URL per app is currently supported.</div>
+        </div>
+      </div>
+      <input type="submit" class="btn btn-primary mb-3" value="Update">
+    </form>
+    <form action="/apps/{{ app.clientId }}/reset-secret" method="post">
+      <input type="hidden" name="csrftoken" value="{{ csrftoken }}">
+      <input type="submit" value="Reset secret" class="btn btn-danger">
+    </form>
   </div>
   <h2>Generate OAuth2 URL</h2>
   <form>

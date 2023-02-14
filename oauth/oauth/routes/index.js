@@ -109,6 +109,67 @@ router.get('/apps/:clientId', isAuthenticated, async (req, res) => {
   });
 });
 
+router.post('/apps/:clientId', doubleCsrfProtection, isAuthenticated, async (req, res) => {
+  const clientId = req.params.clientId;
+  const app = await prisma.app.findUnique({
+    where: {
+      clientId: clientId,
+    },
+    include: {
+      user: true,
+    }
+  });
+  if (!app || app.user.username !== req.session.username) {
+    res.status(403).send('Forbidden');
+    return;
+  }
+  await prisma.app.update({
+    where: {
+      clientId: clientId,
+    },
+    data: {
+      name: req.body.name,
+      redirects: {
+        updateMany: {
+          where: {}, // this "where" is needed, see https://github.com/prisma/prisma/issues/7248#issuecomment-850152638
+          data: {
+            uri: req.body.redirect,
+          }
+        }
+      },
+    },
+  });
+  res.redirect('/apps/' + clientId);
+});
+
+router.post('/apps/:clientId/reset-secret', doubleCsrfProtection, isAuthenticated, async (req, res) => {
+  const clientId = req.params.clientId;
+  const app = await prisma.app.findUnique({
+    where: {
+      clientId: clientId,
+    },
+    include: {
+      user: true,
+    }
+  });
+  if (!app || app.user.username !== req.session.username) {
+    res.status(403).send('Forbidden');
+    return;
+  }
+  await prisma.app.update({
+    where: {
+      clientId: clientId,
+    },
+    data: {
+      clientSecret: crypto.randomBytes(64).toString('hex'),
+    },
+  });
+  res.render('reset_secret.html', {
+    username: req.session.username,
+    app: app,
+  });
+});
+
 router.post('/apps/:clientId/publish', doubleCsrfProtection, isAuthenticated, async (req, res) => {
   const clientId = req.params.clientId;
   const app = await prisma.app.findUnique({
@@ -165,6 +226,7 @@ router.get('/login', function (req, res) {
   const error = req.flash('error');
   res.render('login.html', { redirect: redirectEncoded, username: req.session.username, error: error });
 });
+
 router.post('/login', async function (req, res) {
   const user = await prisma.user.findFirst({
     where: {

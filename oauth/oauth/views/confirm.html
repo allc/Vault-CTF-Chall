@@ -1,14 +1,29 @@
-<div>{{ app.name }} wants to access your account.</div>
-<div>Signed in as {{ username }}</div>
-<div>
-  This will allow the app to:
-  <ul>
-    <li>Access your username</li>
-  </ul>
+{% extends 'base.html' %}
+
+{% block title %}Confirm - {% endblock %}
+
+{% block content %}
+<div class="card w-50 mx-auto m-3">
+  <div class="card-body">
+    <h5>
+      {{ app.name }} wants to access your account
+    </h5>
+    <h6>
+      Signed in as {{ username }}
+    </h6>
+    <div>
+      This will allow the app to:
+      <ul>
+        <li>Access your username</li>
+      </ul>
+    </div>
+    <div>Once you authorize, you will be redirected to: {{ redirect }}</div>
+    <form method="post" class="mt-3">
+      <input type="hidden" name="csrftoken" value="{{ csrftoken }}">
+      <input type="submit" name="decision" value="Cancel" class="btn btn-link">
+      <input id="authorizeButton" type="submit" name="decision" value="Authorize" class="btn btn-primary">
+    </form>
+  </div>
 </div>
-<div>Once you authorize, you will be redirected to: {{ redirect }}</div>
-<form method="post">
-  <input type="hidden" name="csrftoken" value="{{ csrftoken }}">
-  <input type="submit" name="decision" value="Cancel">
-  <input id="authorizeButton" type="submit" name="decision" value="Authorize">
-</form>
+<div></div>
+{% endblock %}
