@@ -1,0 +1,1 @@
+We safeguard challs and flags in our very own vault at SIGKILL.
