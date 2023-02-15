@@ -1,21 +1,49 @@
 var express = require('express');
 var router = express.Router();
 require('dotenv').config();
+let crypto = require('crypto');
 
 router.get('/', function(req, res, next) {
+  res.render('index.html', {
+    username: req.session.username,
+  });
+});
+
+router.get('/login', function(req, res) {
   const { OAUTH_API_ENDPOINT, CLIENT_ID, REDIRECT_URI } = process.env;
   const redirectUrI = encodeURIComponent(REDIRECT_URI);
-  const oauthUrl = `${OAUTH_API_ENDPOINT}/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${redirectUrI}&scope=username`
-  res.render('index.html', {
-    oauthUrl: oauthUrl,
-    username: req.session.username,
-    owner: process.env.TARGET_USERNAME,
-    flag: process.env.FLAG,
-  });
+  const state = crypto.randomBytes(16).toString('hex');
+  req.session.state = state;
+  const oauthUrl = `${OAUTH_API_ENDPOINT}/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${redirectUrI}&scope=username&state=${state}`;
+  res.redirect(oauthUrl);
+});
+
+router.get('/logout', function(req, res) {
+  req.session.username = null;
+  res.redirect('/');
+})
+
+router.get('/flag', function(req, res) {
+  if (req.session.username === process.env.CHALLENGE_USERNAME) {
+    res.send(process.env.FLAG);
+    return;
+  } else if (req.session.username) {
+    res.status(403).send('Only member of SIGKILL have access to the flag.');
+    return;
+  } else {
+    res.redirect('/login');
+    return;
+  }
 });
 
 router.get('/oauth2/callback', (req, res) => {
   const { OAUTH_API_ENDPOINT_INTRNAL, API_ENDPOINT, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
+  if ((req.query.code || req.query.access_token) && req.query.state !== req.session.state) {
+    res.status(400).send('Invalid state.');
+    return;
+  } else if (req.query.code || req.query.access_token) {
+    req.session.state = null;
+  }
   if (req.query.code) {
     fetch(OAUTH_API_ENDPOINT_INTRNAL + '/token',{
       method: 'POST',

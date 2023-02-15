@@ -2,7 +2,7 @@ import puppeteer from "puppeteer";
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const { OAUTH_API_ENDPOINT, TARGET_USERNAME, PASSWORD } = process.env;
+const { OAUTH_API_ENDPOINT, CHALLENGE_USERNAME, PASSWORD } = process.env;
 
 export async function visitApp(clientId, redirectUri) {
   const browser = await puppeteer.launch({
@@ -15,7 +15,7 @@ export async function visitApp(clientId, redirectUri) {
 
   await page.goto(url);
 
-  await page.type('#username', TARGET_USERNAME);
+  await page.type('#username', CHALLENGE_USERNAME);
   await page.type('#password', PASSWORD);
   await Promise.all([
     page.waitForNavigation(),

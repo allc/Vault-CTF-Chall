@@ -7,7 +7,7 @@ dotenv.config()
 try{
   await prisma.user.create({
     data: {
-      username: process.env.TARGET_USERNAME,
+      username: process.env.CHALLENGE_USERNAME,
       password: process.env.PASSWORD,
     }
   });
@@ -23,7 +23,7 @@ try {
       name: process.env.APP_NAME,
       user: {
         connect: {
-          username: process.env.TARGET_USERNAME
+          username: process.env.CHALLENGE_USERNAME
         }
       }
     }

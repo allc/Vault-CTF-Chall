@@ -1,7 +1,7 @@
-import { randomBytes } from 'crypto';
-
 import express from 'express';
 var router = express.Router();
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
@@ -28,7 +28,8 @@ router.get('/users/@me', async (req, res) => {
     res.status(400).json({ message: 'Access token expired.'});
     return;
   }
-  res.json({ username: accessToken.user.username });
+  const isMember = accessToken.user.username === process.env.CHALLENGE_USERNAME
+  res.json({ username: accessToken.user.username, isMember: isMember });
 });
 
 export default router;

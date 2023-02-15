@@ -104,7 +104,6 @@ router.get('/apps/:clientId', isAuthenticated, async (req, res) => {
     username: req.session.username,
     app: app,
     oauthApiEndpoint: process.env.OAUTH_API_ENDPOINT,
-    targetUsername: process.env.TARGET_USERNAME,
     csrftoken: csrftoken,
   });
 });

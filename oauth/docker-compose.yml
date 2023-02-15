@@ -15,7 +15,7 @@ services:
       - "CLIENT_ID=37147ef3-fdb8-4f7e-8de2-2852be5194ab"
       - "CLIENT_SECRET=da3d2979d0cd84e8fc8beb47e94492cc75fb5fadd1fec2f526996bef24c25b45"
       - "REDIRECT_URI=http://localhost:3000/oauth2/callback"
-      - "TARGET_USERNAME=Chillvibes"
+      - "CHALLENGE_USERNAME=Chillvibes"
       - "FLAG=pwned4{0auth_n0t_4u7h3n7ic47ion}"
       - "SESSION_SECRET=49b1f5fac85402bc14e806a3295d9c48e919bb063033bdb6ef58892b212c229469def18448c6f0591f03766754aa72533bb9aaf3d0288dc4fcd7ecef3b19e19b"
 
