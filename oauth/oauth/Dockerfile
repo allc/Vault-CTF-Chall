@@ -6,8 +6,10 @@ ENV CSRF_SECRET ac993c72267193b918e9cc7b9b1722c477e71c0e501d8b11ac76af3ecd60de13
 ENV CLIENT_ID 37147ef3-fdb8-4f7e-8de2-2852be5194ab
 ENV CLIENT_SECRET da3d2979d0cd84e8fc8beb47e94492cc75fb5fadd1fec2f526996bef24c25b45
 ENV APP_NAME "SIGKILL Vault"
+# change this according to where client accessible at
 ENV REDIRECT http://localhost:3000/oauth2/callback
 ENV SESSION_SECRET 6429c4e716e1bc7a94f33f7ff009a94dc4e203b3af0c69d5efb27a25cad7ffad53cc90464f5001f1251eb9dd94ec56ccc94ccd7df663a52c15898711fdc22aa6
+# change this according to where oauth server accessible at
 ENV OAUTH_API_ENDPOINT http://localhost:3001/oauth2
 
 RUN apt-get update \
