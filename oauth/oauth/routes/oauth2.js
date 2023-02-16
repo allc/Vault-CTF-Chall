@@ -140,7 +140,7 @@ router.post('/token', async (req, res) => {
   const tokenExpiresIn = 3600000;
   try {
     await prisma.$transaction(async (tx) => {
-      const authorizationCode = await tx.AuthorizationCode.findFirstOrThrow({
+      const authorizationCode = await tx.AuthorizationCode.findFirst({
         where: {
           code: code,
           app: {
@@ -153,6 +153,11 @@ router.post('/token', async (req, res) => {
           user: true,
         }
       });
+      if (!authorizationCode) {
+        throw new Error('Error.');
+      }
+      //TODO: optimise code deletion
+      // More specifically, expired code won't be deleted under this transaction
       await tx.AuthorizationCode.deleteMany({
         where: {
           code: code,

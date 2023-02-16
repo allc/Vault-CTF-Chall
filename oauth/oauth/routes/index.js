@@ -143,7 +143,7 @@ router.post('/apps/:clientId', doubleCsrfProtection, isAuthenticated, async (req
 
 router.post('/apps/:clientId/reset-secret', doubleCsrfProtection, isAuthenticated, async (req, res) => {
   const clientId = req.params.clientId;
-  const app = await prisma.app.findUnique({
+  let app = await prisma.app.findUnique({
     where: {
       clientId: clientId,
     },
@@ -162,6 +162,15 @@ router.post('/apps/:clientId/reset-secret', doubleCsrfProtection, isAuthenticate
     data: {
       clientSecret: crypto.randomBytes(64).toString('hex'),
     },
+  });
+  // Quick fix: refresh app data
+  app = await prisma.app.findUnique({
+    where: {
+      clientId: clientId,
+    },
+    include: {
+      user: true,
+    }
   });
   res.render('reset_secret.html', {
     username: req.session.username,
