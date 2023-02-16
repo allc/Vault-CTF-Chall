@@ -38,6 +38,8 @@ router.get('/flag', function(req, res) {
 
 router.get('/oauth2/callback', (req, res) => {
   const { OAUTH_API_ENDPOINT_INTRNAL, API_ENDPOINT, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
+  //TODO: better handling state
+  // More specifically, maybe cancelled authorization should also invalidate the state
   if ((req.query.code || req.query.access_token) && req.query.state !== req.session.state) {
     res.status(400).send('Invalid state.');
     return;
