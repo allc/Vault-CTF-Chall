@@ -24,7 +24,7 @@ router.get('/logout', function(req, res) {
 })
 
 router.get('/flag', function(req, res) {
-  if (req.session.username === process.env.CHALLENGE_USERNAME) {
+  if (!req.session.username && req.session.username === process.env.CHALLENGE_USERNAME) {
     res.send(process.env.FLAG);
     return;
   } else if (req.session.username) {
