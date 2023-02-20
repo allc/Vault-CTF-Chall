@@ -1,3 +1,0 @@
-//TODO: soln
-
-No files distributed. Entry point commented and config needs to change in docker-compose.yml.

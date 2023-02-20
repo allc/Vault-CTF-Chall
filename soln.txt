@@ -1,0 +1,3 @@
+The Vault app also supports OAuth2 Implicit Flow. Can setup their own app in oauth server, and the admin bot will visit their OAuth2 callback endpoint with authorization code. Can then exchange the code for token at token endpoint on oauth server. Then login using implicit flow on Vault with the token acquired.
+
+No files distributed. Entry point commented and config needs to change in docker-compose.yml.

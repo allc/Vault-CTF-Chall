@@ -1,0 +1,25 @@
+# Challenge entry point: http://localhost:3000
+
+version: '3'
+services:
+  oauth:
+    # some environment variables needs to change in Dockerfile for this (look for "change this")
+    build: './oauth'
+    ports:
+      - "3001:3001"
+  
+  client:
+    environment:
+      - "OAUTH_API_ENDPOINT=http://localhost:3001/oauth2" # change this according to where oauth server hosted at
+      - "OAUTH_API_ENDPOINT_INTRNAL=http://oauth:3001/oauth2"
+      - "API_ENDPOINT=http://oauth:3001/api"
+      - "CLIENT_ID=37147ef3-fdb8-4f7e-8de2-2852be5194ab"
+      - "CLIENT_SECRET=da3d2979d0cd84e8fc8beb47e94492cc75fb5fadd1fec2f526996bef24c25b45"
+      - "REDIRECT_URI=http://localhost:3000/oauth2/callback" # change this according to where client hosted at
+      - "CHALLENGE_USERNAME=Chillvibes"
+      - "FLAG=pwned4{0auth_n0t_4u7h3n7ic47ion}"
+      - "SESSION_SECRET=49b1f5fac85402bc14e806a3295d9c48e919bb063033bdb6ef58892b212c229469def18448c6f0591f03766754aa72533bb9aaf3d0288dc4fcd7ecef3b19e19b"
+
+    build: './client'
+    ports:
+      - "3000:3000"
